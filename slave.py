@@ -23,7 +23,7 @@ def init_sync():
     TX.on()
 
     # Step 2
-    while(RX.is_released):
+    while(not RX.is_pressed):
         pass
 
     # Step 3

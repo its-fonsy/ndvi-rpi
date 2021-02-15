@@ -17,7 +17,7 @@ def init_sync():
     3. Receive RX from SLAVE
     """
     print("Waiting for slave...")
-    while(RX.is_released):
+    while(not RX.is_pressed):
         pass
     print("Got RX, ensuring is active")
     TX.off()
