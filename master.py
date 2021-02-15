@@ -7,8 +7,15 @@ RX = Button(2)
 TX = LED(3)
 TX.on()
 
+
+def send_TX():
+    TX.off()
+    sleep(DELAY)
+    TX.on()
+
+
 def init_sync():
-    DELAY = 0.5
+    DELAY = 0.2
     """
     (MASTER)
     Three step init_sync:
@@ -16,15 +23,18 @@ def init_sync():
     2. Send TX to SLAVE
     3. Receive RX from SLAVE
     """
-    print("Waiting for slave...")
-    while(not RX.is_pressed):
-        pass
-    print("Got RX, ensuring is active")
+    # Step 1
+    print("Waiting for slave RX")
+    RX.wait_for_press()
+    print("Received RX")
+
+    # Step 2
+    sleep(1)
+    print("Sending TX to slave")
     TX.off()
-    sleep(DELAY)
-    TX.on()
-    while(RX.is_released):
-        pass
-    print("slave is active")
+
+    # Step 3
+    RX.wait_for_press()
+    print("Received final RX")
 
 init_sync()

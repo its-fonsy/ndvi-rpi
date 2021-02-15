@@ -3,12 +3,19 @@
 from time import sleep
 from gpiozero import LED, Button
 
+DELAY = 0.2
 RX = Button(2)
 TX = LED(3)
 TX.on()
 
+
+def send_TX():
+    TX.off()
+    sleep(DELAY)
+    TX.on()
+
+
 def init_sync():
-    DELAY = 0.5
     """
     (SLAVE)
     Three step init_sync:
@@ -19,17 +26,23 @@ def init_sync():
     # Step 1
     print("Sending TX to master")
     TX.off()
-    sleep(DELAY)
-    TX.on()
 
     # Step 2
-    while(not RX.is_pressed):
-        pass
+    print("Waiting RX from master")
+    RX.wait_for_press(5)
+
+    if not RX.is_pressed:
+        return False
+    else:
+        TX.on()
+
+    print("RX from master received")
 
     # Step 3
-    print("Got RX from master, confirm active slave")
-    TX.off()
-    sleep(DELAY)
-    TX.on()
+    sleep(1)
+    print("Send last TX to master")
+    send_TX()
+    return True
 
-init_sync()
+while(not init_sync()):
+    pass
