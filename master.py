@@ -1,13 +1,17 @@
 #!/usr/bin/env python3
 
 from time import sleep
-from picamera import PiCamera
+from gpiozero import LED, Buttoh
 
-camera = PiCamera()
-camera.resolution = (1024, 768)
-camera.start_preview()
-# Camera warm-up time
-sleep(2)
+RX = Button(2)
+TX = LED(3)
+TX.on()
 
-camera.capture('foo.jpg')
-
+input("Press any key to send a signal")
+TX.off()
+sleep(1)
+TX.on()
+print("TX sent, waiting for response")
+while(not RX.is_pressed):
+    pass
+print("RX received!")
