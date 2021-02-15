@@ -19,30 +19,26 @@ def init_sync():
     """
     (SLAVE)
     Three step init_sync:
-    1. Send TX to MASTER
-    2. Receive RX to SLAVE
-    3. Send TX to MASTER
+    1. Wait TX from MASTER
+    2. Send TX to MASTER
+    3. Wait TX from MASTER
     """
     # Step 1
-    print("Sending TX to master")
-    TX.off()
+    print("Waiting for master TX")
+    RX.wait_for_press()
+    print("Received TX")
 
     # Step 2
-    print("Waiting RX from master")
-    RX.wait_for_press(5)
-
-    if not RX.is_pressed:
-        return False
-    else:
-        TX.on()
-
-    print("RX from master received")
+    sleep(1)
+    print("Sending TX to slave")
+    TX.off()
 
     # Step 3
-    sleep(1)
-    print("Send last TX to master")
-    send_TX()
+    RX.wait_for_press()
+    print("Received final TX")
+    TX.on()
+
     return True
 
-while(not init_sync()):
-    pass
+
+init_sync()
