@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from time import sleep
-from gpiozero import LED, Buttoh
+from gpiozero import LED, Button
 
 RX = Button(2)
 TX = LED(3)
