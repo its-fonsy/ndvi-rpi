@@ -1,50 +1,38 @@
 #!/usr/bin/env python3
 
-from time import sleep
-from gpiozero import LED, Button
+import serial
+from time import sleep, time
+from picamera import PiCamera
 
-RX = Button(2)
-TX = LED(3)
-TX.on()
+DELAY = 0.2
+ser = serial.Serial(
+        port='/dev/ttyAMA0',
+        baudrate = 9600,
+        parity=serial.PARITY_NONE,
+        stopbits=serial.STOPBITS_ONE,
+        bytesize=serial.EIGHTBITS,
+        timeout=1 )
 
 
-def send_TX():
-    TX.off()
-    sleep(DELAY)
-    TX.on()
+def main():
+
+    camera = PiCamera()
+    camera.resolution = (1024, 768)
+
+    # Camera warm-up time
+    camera.start_preview()
+    sleep(2)
+
+    camera.capture('foo.jpg')
 
 
-def init_sync():
-    """
-    (MASTER)
-    Three step init_sync:
-    1. Send TX to SLAVE
-    2. Receive RX from SLAVE
-    3. Send TX to SLAVE
-    """
+counter = 1
+while 1:
+    msg = f"Counter is at: {counter}\n"
+    sec = time()
+    ser.write(msg.encode())
 
-    DELAY = 0.2
-
-    # Step 1
-    print("Sending TX to slave")
-    TX.off()
-
-    # Step 2
-    print("Waiting for slave TX")
-    RX.wait_for_press(5)
-    if not RX.is_pressed:
-        return False
-    else:
-        print("Received TX")
-        TX.on()
-
-    # Step 3
+    msg += 'at: ' + str(sec)
+    print(msg)
     sleep(1)
-    print("Sending final TX to slave")
-    TX.off()
-
-    return True
-
-
-while(not init_sync()):
-    pass
+    counter += 1
