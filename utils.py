@@ -3,6 +3,7 @@
 import os
 import datetime
 
+
 HOME = os.getenv("HOME")
 PATH = HOME + "/flights/"
 
@@ -32,8 +33,3 @@ def gen_folder_name():
 
     folder = folder_date + "_flight_" + str(n)
     return folder
-
-
-def new_flight():
-    folder = gen_folder_name()
-    os.mkdir(PATH+folder)
