@@ -2,10 +2,44 @@
 
 import os
 import datetime
+import serial
 
 
 HOME = os.getenv("HOME")
 PATH = HOME + "/flights/"
+ser = serial.Serial(
+        port='/dev/ttyAMA0',
+        baudrate = 9600,
+        parity=serial.PARITY_NONE,
+        stopbits=serial.STOPBITS_ONE,
+        bytesize=serial.EIGHTBITS,
+        timeout=1 )
+
+
+def receive_message(expectation, error):
+    while( True ):
+        ans = ser.readline()
+        if ans != b"":
+            message = ans.decode().strip()
+            if message == expectation:
+                ser.write("1\n".encode())
+                return None
+            else:
+                ser.write("0\n".encode())
+                raise RuntimeError(error)
+
+
+def send_message(message, error):
+    msg = f"{message}\n"
+    while( True ):
+        ser.write(msg.encode())
+        ans = ser.readline()
+        if ans != b"":
+            answer= ans.decode().strip()
+            if answer == "1":
+                return None
+            if answer == "0":
+                raise RuntimeError(error)
 
 
 def gen_folder_name():
