@@ -7,7 +7,12 @@ from time import sleep, time
 from picamera import PiCamera
 
 
-DELAY = 0.2
+# Initiate the Pi camera
+camera = PiCamera()
+camera.resolution = (3280, 2464)
+# Camera warm-up time
+camera.start_preview()
+sleep(2)
 
 
 def create_folder():
@@ -19,19 +24,22 @@ def create_folder():
     send_message(folder, 'Name of the folder are not the same')
 
     os.mkdir(PATH+folder)
-    return PATH+folder
+    return PATH + folder + '/'
 
 
-def shot(n):
+def shot(n, folder):
     # MASTER send "n"
-    print("Going to shot %d_rgb.png" % n)
-    send_message(n, 'Photo name not synced')
-    photo = "%d_ir.png" % n
-    sleep(0.2)
+    if (n < 10):
+        photo = "0%d_ir.jpg" % n
+    else:
+        photo = "%d_ir.jpg" % n
+
+    print("Going to shot %s" % photo)
+    send_message(str(n), 'Photo name not synced')
 
     # MASTER say the SLAVE to shoot a photo
     send_message("shoot", 'Photo not shooted')
-    print("shoot")
+    camera.capture(folder+photo)
 
     # Wait the SLAVE to confirm
     receive_message("shooted", 'Photo not shooted')
@@ -40,18 +48,12 @@ def shot(n):
 
 def main():
 
-    # folder = create_folder()
+    folder = create_folder()
 
-    MAX = 100
+    MAX = 10
     for n in range(MAX):
-        sleep(1)
-        shot(n+1)
+        sleep(3)
+        shot(n+1, folder)
 
-    # camera = PiCamera()
-    # camera.resolution = (1024, 768)
-    # # Camera warm-up time
-    # camera.start_preview()
-    # sleep(2)
-    # camera.capture('foo.jpg')
 
 main()

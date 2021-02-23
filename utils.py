@@ -21,6 +21,8 @@ def receive_message(expectation, error):
         ans = ser.readline()
         if ans != b"":
             message = ans.decode().strip()
+            print("DEBUG: The message is: ", message)
+            print("DEBUG: Expected: ", expectation)
             if message == expectation:
                 ser.write("1\n".encode())
                 return None
@@ -33,9 +35,11 @@ def send_message(message, error):
     msg = f"{message}\n"
     while( True ):
         ser.write(msg.encode())
+        print("DEBUG: The message is: ", msg)
         ans = ser.readline()
         if ans != b"":
             answer= ans.decode().strip()
+            print("DEBUG: answer: ", answer)
             if answer == "1":
                 return None
             if answer == "0":
