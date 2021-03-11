@@ -16,16 +16,16 @@ ser = serial.Serial(
         timeout=1 )
 
 
-def receive_message(expectation, error):
+def receive_message(expectations, error):
     while( True ):
         ans = ser.readline()
         if ans != b"":
             message = ans.decode().strip()
-            print("DEBUG: The message is: ", message)
-            print("DEBUG: Expected: ", expectation)
-            if message == expectation:
+            # print("DEBUG: The message is: ", message)
+            # print("DEBUG: Expected: ", expectation)
+            if message in expectations:
                 ser.write("1\n".encode())
-                return None
+                return message
             else:
                 ser.write("0\n".encode())
                 raise RuntimeError(error)
@@ -35,11 +35,11 @@ def send_message(message, error):
     msg = f"{message}\n"
     while( True ):
         ser.write(msg.encode())
-        print("DEBUG: The message is: ", msg)
+        # print("DEBUG: The message is: ", msg)
         ans = ser.readline()
         if ans != b"":
             answer= ans.decode().strip()
-            print("DEBUG: answer: ", answer)
+            # print("DEBUG: answer: ", answer)
             if answer == "1":
                 return None
             if answer == "0":
